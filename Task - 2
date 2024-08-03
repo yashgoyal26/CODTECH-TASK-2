@@ -1,0 +1,45 @@
+/* */
+
+// FSM CODE
+module fsm (clk, reset, in);
+input clk, reset, in;
+reg [1:0] state;
+
+parameter s1 = 2'b00; parameter s2 = 2'b01;
+parameter s3 = 2'b10; parameter s4 = 2'b11;
+
+always @(posedge clk or posedge reset)
+begin
+if (reset) state <= s1;
+else case (state)
+s1:if (in == 1'b1) state <= s2;
+else state <= s3;
+s2: state <= s4;
+s3: state <= s4;
+s4: state <= s1;
+endcase
+end
+endmodule
+// FSM CODE TESTBENCH
+module testbench();
+reg clk,reset,in;
+
+fsm dut(clk,reset,in);
+  
+initial begin 
+  $dumpfile("testbench.vcd");
+  $dumpvars();
+end
+
+initial
+forever #5 clk = ~clk;
+
+initial
+begin
+clk =0;in = 0;
+#2 reset = 0;#2 reset = 1;
+#21 reset = 0;#9 in = 0;
+#9 in = 1;#10 $finish;
+end
+
+endmodule
